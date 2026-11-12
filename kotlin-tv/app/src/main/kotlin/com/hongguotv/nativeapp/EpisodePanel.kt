@@ -59,14 +59,14 @@ class EpisodePanel(
         dialog.show()
         dialog.window?.apply {
             setBackgroundDrawableResource(android.R.color.transparent)
-            setGravity(Gravity.END or Gravity.CENTER_VERTICAL)
+            setGravity(Gravity.BOTTOM)
             attributes =
                 attributes.apply {
-                    x = (activity.resources.displayMetrics.widthPixels * .05f).toInt()
+                    x = 0
                 }
             setLayout(
-                minOf(dp(520), (activity.resources.displayMetrics.widthPixels * .8f).toInt()),
-                (activity.resources.displayMetrics.heightPixels * .9f).toInt(),
+                (activity.resources.displayMetrics.widthPixels * .96f).toInt(),
+                (activity.resources.displayMetrics.heightPixels * .72f).toInt(),
             )
         }
     }

@@ -454,11 +454,11 @@ class TvSocial(
         d.show()
         d.window?.apply {
             setBackgroundDrawableResource(android.R.color.transparent)
-            setGravity(Gravity.END)
+            setGravity(Gravity.BOTTOM)
             setDimAmount(0f)
             setLayout(
-                minOf(dp(500), (activity.resources.displayMetrics.widthPixels * .65).toInt()),
-                -1,
+                (activity.resources.displayMetrics.widthPixels * .98f).toInt(),
+                (activity.resources.displayMetrics.heightPixels * .72f).toInt(),
             )
         }
         tabs.getChildAt(0).requestFocus()

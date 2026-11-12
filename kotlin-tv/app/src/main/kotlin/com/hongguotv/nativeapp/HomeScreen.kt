@@ -47,7 +47,7 @@ class SeriesPreview(context: Context) : LinearLayout(context) {
     fun show(series: Series?, status: String) {
         val nextTitle = series?.title ?: "选择下方作品查看信息"
         val nextMeta =
-            if (series == null) "方向键选择 · 确认打开作品"
+            if (series == null) "点击海报查看作品详情"
             else
                 listOf(status, series.badge, series.tags)
                     .flatMap { it.split('·') }
@@ -261,7 +261,7 @@ class HomeScreen(
                     label(shelf.title, 16f).apply { setTypeface(null, Typeface.BOLD) },
                     LayoutParams(0, -2, 1f),
                 )
-                heading.addView(label("左右选剧  ·  上下切换分区", 10f, TvStyle.muted))
+                heading.addView(label("左右滑动  ·  上下切换分区", 10f, TvStyle.muted))
                 block.addView(heading)
                 val horizontal =
                     HorizontalScrollView(context).apply {

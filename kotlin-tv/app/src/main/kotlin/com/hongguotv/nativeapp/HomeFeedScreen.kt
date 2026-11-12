@@ -11,7 +11,9 @@ import android.os.Handler
 import android.os.Looper
 import android.text.TextUtils
 import android.view.Gravity
+import android.view.GestureDetector
 import android.view.KeyEvent
+import android.view.MotionEvent
 import android.view.View
 import android.widget.*
 import com.hongguotv.core.*
@@ -244,8 +246,9 @@ internal class HomeFeedScreen(
         }
         previousCard = side(previousCover, previousTitle, -1)
         nextCard = side(nextCover, nextTitle, 1)
-        carousel.addView(previousCard, FrameLayout.LayoutParams(dp(112), -1, Gravity.START))
-        carousel.addView(nextCard, FrameLayout.LayoutParams(dp(112), -1, Gravity.END))
+        val sideWidth = dp(if (activity.resources.displayMetrics.widthPixels / activity.resources.displayMetrics.density < 600f) 56 else 112)
+        carousel.addView(previousCard, FrameLayout.LayoutParams(sideWidth, -1, Gravity.START))
+        carousel.addView(nextCard, FrameLayout.LayoutParams(sideWidth, -1, Gravity.END))
         hero.background = TvVisual.panel(activity)
         hero.clipToOutline = true
         hero.elevation = dp(8).toFloat()
@@ -297,7 +300,8 @@ internal class HomeFeedScreen(
         })
         body.addView(content, lp(-1, 0).apply { weight = 1f })
         carousel.addView(hero, FrameLayout.LayoutParams(-1, -1).apply {
-            setMargins(dp(76), dp(8), dp(76), dp(8))
+            val hm = dp(if (activity.resources.displayMetrics.widthPixels / activity.resources.displayMetrics.density < 600f) 40 else 76)
+            setMargins(hm, dp(8), hm, dp(8))
         })
         addView(carousel, lp(-1, 0).apply { weight = 1f })
         watchButton =
@@ -359,6 +363,35 @@ internal class HomeFeedScreen(
         }
         stage.setOnClickListener { toggle() }
         hero.setOnClickListener { toggle() }
+        // 触摸滑动换剧：左右轻扫切换上一部/下一部（复用 move）。遥控 D-pad 保持不变。
+        val stageGesture =
+            GestureDetector(
+                activity,
+                object : GestureDetector.SimpleOnGestureListener() {
+                    override fun onDown(e: MotionEvent) = true
+
+                    override fun onFling(
+                        e1: MotionEvent?,
+                        e2: MotionEvent,
+                        velocityX: Float,
+                        velocityY: Float,
+                    ): Boolean {
+                        val dx = (e2.x - (e1?.x ?: e2.x))
+                        val dy = (e2.y - (e1?.y ?: e2.y))
+                        if (kotlin.math.abs(dx) > kotlin.math.abs(dy) && kotlin.math.abs(dx) > dp(60)) {
+                            move(if (dx < 0) 1 else -1)
+                            return true
+                        }
+                        return false
+                    }
+                },
+            )
+        stage.setOnTouchListener { _, event ->
+            if (event.actionMasked == MotionEvent.ACTION_UP)
+                stage.performClick()
+            stageGesture.onTouchEvent(event)
+            false
+        }
         stage.setOnKeyListener { _, key, event ->
             when (key) {
                 KeyEvent.KEYCODE_DPAD_UP -> {

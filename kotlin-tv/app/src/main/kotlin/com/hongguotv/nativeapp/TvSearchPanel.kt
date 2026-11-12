@@ -30,7 +30,7 @@ internal class TvSearchPanel(
             setHintTextColor(TvStyle.muted)
             isSingleLine = true
             filters = arrayOf(InputFilter.LengthFilter(80))
-            showSoftInputOnFocus = false
+            showSoftInputOnFocus = true
             imeOptions = android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH
             setText(initial)
             setSelection(text.length)

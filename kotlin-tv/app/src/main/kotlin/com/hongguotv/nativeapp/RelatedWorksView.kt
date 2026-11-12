@@ -171,7 +171,8 @@ internal class RelatedWorksView(
             background = TvVisual.panel(context, modal = true)
         }
         panel.addView(label("全部季 / 相关作品 · ${rows.size} 项", 20f))
-        val grid = GridLayout(context).apply { columnCount = 4 }
+        val allColumns = if (context.resources.displayMetrics.widthPixels / context.resources.displayMetrics.density < 600f) 3 else 4
+        val grid = GridLayout(context).apply { columnCount = allColumns }
         val cells = rows.map { work ->
             LinearLayout(context).apply {
                 orientation = VERTICAL
@@ -199,15 +200,15 @@ internal class RelatedWorksView(
                 }
                 setOnClickListener { allDialog?.dismiss(); open(work, anchor) }
             }.also { cell -> grid.addView(cell, GridLayout.LayoutParams().apply {
-                width = dp(148); height = -2
+                width = dp(if (allColumns == 3) 108 else 148); height = -2
                 setMargins(dp(4), dp(4), dp(4), dp(4))
             }) }
         }
         cells.forEachIndexed { i, cell ->
-            cell.nextFocusLeftId = if (i % 4 > 0) cells[i - 1].id else cell.id
-            cell.nextFocusRightId = if (i % 4 < 3) cells.getOrNull(i + 1)?.id ?: cell.id else cell.id
-            cell.nextFocusUpId = cells.getOrNull(i - 4)?.id ?: cell.id
-            cell.nextFocusDownId = cells.getOrNull(i + 4)?.id ?: cell.id
+            cell.nextFocusLeftId = if (i % allColumns > 0) cells[i - 1].id else cell.id
+            cell.nextFocusRightId = if (i % allColumns < allColumns - 1) cells.getOrNull(i + 1)?.id ?: cell.id else cell.id
+            cell.nextFocusUpId = cells.getOrNull(i - allColumns)?.id ?: cell.id
+            cell.nextFocusDownId = cells.getOrNull(i + allColumns)?.id ?: cell.id
         }
         panel.addView(ScrollView(context).apply { addView(grid) }, LayoutParams(-1, 0, 1f))
         val dialog = AlertDialog.Builder(context).setView(panel).create()
@@ -218,7 +219,7 @@ internal class RelatedWorksView(
         }
         dialog.show()
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
-        dialog.window?.setLayout(dp(680), minOf(dp(420), (resources.displayMetrics.heightPixels * .85f).toInt()))
+        dialog.window?.setLayout((resources.displayMetrics.widthPixels * .94f).toInt(), (resources.displayMetrics.heightPixels * .72f).toInt())
         cells.firstOrNull()?.requestFocus()
     }
 

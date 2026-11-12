@@ -19,6 +19,8 @@ import android.os.Looper
 import android.text.TextUtils
 import android.view.*
 import android.view.inputmethod.InputMethodManager
+import android.view.GestureDetector
+import android.view.MotionEvent
 import android.widget.*
 import androidx.media3.common.*
 import androidx.media3.exoplayer.DefaultLoadControl
@@ -2805,7 +2807,7 @@ class MainActivity : Activity() {
             }
         content.addView(groupRow)
         content.addView(
-            text("橙色为当前集 · 上次为续播位置 · 方向键选择，确定播放", 12f, muted).apply { setPadding(0, 0, 0, dp(6)) }
+            text("橙色为当前集 · 上次为续播位置 · 点击集数播放", 12f, muted).apply { setPadding(0, 0, 0, dp(6)) }
         )
         val episodes = mutableListOf<View>()
         (group * 20 until minOf((group + 1) * 20, data.episodes.size))
@@ -3097,6 +3099,7 @@ class MainActivity : Activity() {
                 }
             playerView = view
             root.addView(view, FrameLayout.LayoutParams(-1, -1, Gravity.CENTER))
+            attachPlayerGestures(view)
             view.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> applyVideoRotation() }
             view.post { if (playerView === view) applyVideoRotation() }
             persistentTime = text("", 12f, white)
@@ -3156,7 +3159,7 @@ class MainActivity : Activity() {
                 }
             hud.addView(progressBar, lp(-1, dp(4)))
             hud.addView(
-                text("确认 暂停/播放    左右 快退/快进    ↓ 选集    ↑ 操作菜单    菜单 更多", 13f, muted).apply {
+                text("单击 暂停/播放    双击两侧 快退/快进    上滑操作菜单", 13f, muted).apply {
                     setPadding(0, dp(12), 0, 0)
                 }
             )
@@ -4300,6 +4303,46 @@ class MainActivity : Activity() {
             (library.clockMode == 2 || hud.visibility == View.VISIBLE)) View.VISIBLE else View.GONE
     }
 
+    /**
+     * 触摸手势层：电视遥控和手机触摸并存。
+     * - 单击：显示 HUD 并切换暂停/继续
+     * - 双击左/右 1/3 屏：后退/前进 10 秒
+     * 只在播放页生效，且不吞掉后续事件（返回 false 让 HUD 按钮仍可点）。
+     */
+    private fun attachPlayerGestures(view: PlayerView) {
+        val detector =
+            GestureDetector(
+                this,
+                object : GestureDetector.SimpleOnGestureListener() {
+                    override fun onDown(e: MotionEvent) = true
+
+                    override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
+                        if (screen != "player") return false
+                        togglePlayback()
+                        showHud()
+                        return true
+                    }
+
+                    override fun onDoubleTap(e: MotionEvent): Boolean {
+                        if (screen != "player") return false
+                        val w = (playerView?.width ?: 0).coerceAtLeast(1)
+                        val direction = if (e.x < w / 3f) -1 else if (e.x > w * 2f / 3f) 1 else 0
+                        if (direction != 0) seek(direction, 1)
+                        return true
+                    }
+                },
+            )
+        view.setOnTouchListener { _, event ->
+            if (event.actionMasked == MotionEvent.ACTION_UP) {
+                if (!detector.onTouchEvent(event)) showHud()
+            } else {
+                detector.onTouchEvent(event)
+            }
+            // HUD 隐藏时消费事件保证手势识别；HUD 可见时放行，让上层按钮可点。
+            hud.visibility != View.VISIBLE
+        }
+    }
+
     private fun showHud() {
         if (screen != "player") return
         hideAutoplayOverlay = false
@@ -4778,7 +4821,7 @@ class MainActivity : Activity() {
             if (token != seasonGeneration || !foreground || detail?.series?.id != current.series.id) return@work
             nextSeasonWork = next
             if (next != null) {
-                val banner = text("本季结束后播放《${next.series.title}》 · 取消请按 ↑ 操作菜单", 13f).apply {
+                val banner = text("本季结束后播放《${next.series.title}》 · 取消请点操作菜单", 13f).apply {
                     setPadding(dp(14), dp(9), dp(14), dp(9))
                     setSingleLine(true)
                     ellipsize = TextUtils.TruncateAt.END
