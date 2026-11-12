@@ -71,7 +71,7 @@ internal class DiscoveryScreen(
         browser =
             ContinuousCatalogView(
                 context,
-                if (context.resources.displayMetrics.widthPixels / context.resources.displayMetrics.density < 600f) 3 else 4,
+                if (context.resources.displayMetrics.widthPixels / context.resources.displayMetrics.density < 600f) 3 else 6,
                 toggle,
                 { item, recycled ->
                     (recycled as? CatalogPosterCard ?: CatalogPosterCard(context)).apply {

@@ -278,8 +278,9 @@ class HomeScreen(
                 block.addView(horizontal)
                 val rowCards = mutableListOf<Card>()
                 fun addCard(entry: Entry?, moreAction: (() -> Unit)? = null) {
+                    val wDp = resources.displayMetrics.widthPixels / resources.displayMetrics.density
                     val width =
-                        ((resources.displayMetrics.widthPixels * .92f - dp(48)) / 2.6f)
+                        ((resources.displayMetrics.widthPixels * .92f - dp(48)) / (if (wDp < 600f) 2.6f else 6f))
                             .toInt()
                             .coerceAtLeast(dp(100))
                     val key =

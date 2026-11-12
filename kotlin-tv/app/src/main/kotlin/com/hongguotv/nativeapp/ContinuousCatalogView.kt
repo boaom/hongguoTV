@@ -425,7 +425,7 @@ internal class CatalogPosterCard(context: Context) : LinearLayout(context) {
             (6 * density).toInt(),
         )
         val defaultWidth =
-            ((resources.displayMetrics.widthPixels * .9f - 14 * density * 5) / 3 - 8 * density)
+            ((resources.displayMetrics.widthPixels * .9f - 14 * density * 5) / 6 - 8 * density)
                 .coerceAtLeast(1f)
         val defaultHeight = (defaultWidth / TvStyle.POSTER_ASPECT).roundToInt()
         poster.addView(image, FrameLayout.LayoutParams(-1, -1))

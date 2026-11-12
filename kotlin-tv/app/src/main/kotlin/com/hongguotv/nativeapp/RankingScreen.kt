@@ -314,7 +314,7 @@ internal class RankingScreen(
         list =
             ContinuousCatalogView(
                 activity,
-                if (activity.resources.displayMetrics.widthPixels / activity.resources.displayMetrics.density < 600f) 3 else 4,
+                if (activity.resources.displayMetrics.widthPixels / activity.resources.displayMetrics.density < 600f) 3 else 6,
                 controls[state.board.ordinal],
                 { item, recycled ->
                     val card = recycled as? CatalogPosterCard ?: CatalogPosterCard(activity)

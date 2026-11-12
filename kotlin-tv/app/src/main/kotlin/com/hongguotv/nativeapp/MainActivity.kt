@@ -1559,7 +1559,7 @@ class MainActivity : Activity() {
             return
         }
         val cards = mutableListOf<View>()
-        val count = if (resources.displayMetrics.widthPixels / resources.displayMetrics.density < 600f) 3 else 4
+        val count = if (resources.displayMetrics.widthPixels / resources.displayMetrics.density < 600f) 3 else 6
         val gap = dp(14)
         val width =
             ((resources.displayMetrics.widthPixels * .9f - gap * (count - 1)) / count).toInt()
@@ -2316,9 +2316,20 @@ class MainActivity : Activity() {
     private fun settings(parent: LinearLayout) {
         parent.addView(Space(this), lp(1, dp(20)))
         val layout = row().apply { gravity = Gravity.TOP }
+        val isPhone = resources.displayMetrics.widthPixels / resources.displayMetrics.density < 600f
+        if (isPhone) {
+            // 手机竖屏：分类做成顶部横滑 chips，内容区全宽单栏。
+            layout.orientation = VERTICAL
+        }
         parent.addView(layout, lp(-1, 0).apply { weight = 1f })
-        val sidebar = column()
-        layout.addView(sidebar, lp(dp(170), -1).apply { rightMargin = dp(22) })
+        val sidebar = column().apply { if (isPhone) orientation = HORIZONTAL }
+        if (isPhone) {
+            val chipScroll = HorizontalScrollView(this).apply { isHorizontalScrollBarEnabled = false }
+            chipScroll.addView(sidebar)
+            layout.addView(chipScroll, lp(-1, -2).apply { bottomMargin = dp(12) })
+        } else {
+            layout.addView(sidebar, lp(dp(170), -1).apply { rightMargin = dp(22) })
+        }
         val scroll = ScrollView(this).apply { isVerticalScrollBarEnabled = false; isFillViewport = false }
         val content = column().apply {
             setPadding(dp(20), dp(14), dp(20), dp(14))
@@ -2385,7 +2396,11 @@ class MainActivity : Activity() {
                 minHeight = dp(52)
                 gravity = Gravity.CENTER_VERTICAL
                 setPadding(dp(22), dp(10), dp(12), dp(10))
-                sidebar.addView(this, lp(-1, -2).apply { bottomMargin = dp(8) })
+                if (isPhone) {
+                    sidebar.addView(this, lp(-2, -2).apply { rightMargin = dp(8) })
+                } else {
+                    sidebar.addView(this, lp(-1, -2).apply { bottomMargin = dp(8) })
+                }
                 setOnFocusChangeListener { _, focused ->
                     if (focused) render(index)
                     background = TvVisual.row(this@MainActivity, focused, settingsGroup == index, category = true)
@@ -2810,9 +2825,10 @@ class MainActivity : Activity() {
             text("橙色为当前集 · 上次为续播位置 · 点击集数播放", 12f, muted).apply { setPadding(0, 0, 0, dp(6)) }
         )
         val episodes = mutableListOf<View>()
+        val episodeCols = if (resources.displayMetrics.widthPixels / resources.displayMetrics.density < 600f) 5 else 10
         (group * 20 until minOf((group + 1) * 20, data.episodes.size))
             .toList()
-            .chunked(5)
+            .chunked(episodeCols)
             .forEach { numbers ->
                 val line = row()
                 numbers.forEach { index ->
@@ -2847,7 +2863,7 @@ class MainActivity : Activity() {
                     )
                     episodes += item
                 }
-                repeat(5 - numbers.size) {
+                repeat(episodeCols - numbers.size) {
                     line.addView(
                         Space(this),
                         lp(0, dp(42)).apply {
@@ -2859,11 +2875,11 @@ class MainActivity : Activity() {
                 content.addView(line, lp(-1, dp(49)))
             }
         episodes.forEachIndexed { i, v ->
-            v.nextFocusLeftId = if (i % 5 == 0) v.id else episodes[i - 1].id
+            v.nextFocusLeftId = if (i % episodeCols == 0) v.id else episodes[i - 1].id
             v.nextFocusRightId =
-                if (i % 5 == 4 || i == episodes.lastIndex) v.id else episodes[i + 1].id
-            if (i >= 5) v.nextFocusUpId = episodes[i - 5].id
-            v.nextFocusDownId = if (i + 5 < episodes.size) episodes[i + 5].id else v.id
+                if (i % episodeCols == episodeCols - 1 || i == episodes.lastIndex) v.id else episodes[i + 1].id
+            if (i >= episodeCols) v.nextFocusUpId = episodes[i - episodeCols].id
+            v.nextFocusDownId = if (i + episodeCols < episodes.size) episodes[i + episodeCols].id else v.id
         }
         val primary = listOf(play, detailComments)
         play.setTextColor(accent)
