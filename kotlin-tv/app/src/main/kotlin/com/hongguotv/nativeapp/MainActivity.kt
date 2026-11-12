@@ -2319,10 +2319,10 @@ class MainActivity : Activity() {
         val isPhone = resources.displayMetrics.widthPixels / resources.displayMetrics.density < 600f
         if (isPhone) {
             // 手机竖屏：分类做成顶部横滑 chips，内容区全宽单栏。
-            layout.orientation = VERTICAL
+            layout.orientation = LinearLayout.VERTICAL
         }
         parent.addView(layout, lp(-1, 0).apply { weight = 1f })
-        val sidebar = column().apply { if (isPhone) orientation = HORIZONTAL }
+        val sidebar = column().apply { if (isPhone) orientation = LinearLayout.HORIZONTAL }
         if (isPhone) {
             val chipScroll = HorizontalScrollView(this).apply { isHorizontalScrollBarEnabled = false }
             chipScroll.addView(sidebar)
