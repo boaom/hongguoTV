@@ -1557,7 +1557,7 @@ class MainActivity : Activity() {
             return
         }
         val cards = mutableListOf<View>()
-        val count = 6
+        val count = if (resources.displayMetrics.widthPixels / resources.displayMetrics.density < 600f) 3 else 4
         val gap = dp(14)
         val width =
             ((resources.displayMetrics.widthPixels * .9f - gap * (count - 1)) / count).toInt()
@@ -1594,7 +1594,7 @@ class MainActivity : Activity() {
                             background =
                                 rounded(
                                     if ((position?.rank ?: Int.MAX_VALUE) <= 3) accent
-                                    else Color.rgb(28, 31, 39)
+                                    else Color.rgb(22, 27, 46)
                                 )
                         },
                         FrameLayout.LayoutParams(-2, -2, Gravity.TOP or Gravity.START),
@@ -2810,7 +2810,7 @@ class MainActivity : Activity() {
         val episodes = mutableListOf<View>()
         (group * 20 until minOf((group + 1) * 20, data.episodes.size))
             .toList()
-            .chunked(10)
+            .chunked(5)
             .forEach { numbers ->
                 val line = row()
                 numbers.forEach { index ->
@@ -2845,7 +2845,7 @@ class MainActivity : Activity() {
                     )
                     episodes += item
                 }
-                repeat(10 - numbers.size) {
+                repeat(5 - numbers.size) {
                     line.addView(
                         Space(this),
                         lp(0, dp(42)).apply {
@@ -2857,11 +2857,11 @@ class MainActivity : Activity() {
                 content.addView(line, lp(-1, dp(49)))
             }
         episodes.forEachIndexed { i, v ->
-            v.nextFocusLeftId = if (i % 10 == 0) v.id else episodes[i - 1].id
+            v.nextFocusLeftId = if (i % 5 == 0) v.id else episodes[i - 1].id
             v.nextFocusRightId =
-                if (i % 10 == 9 || i == episodes.lastIndex) v.id else episodes[i + 1].id
-            if (i >= 10) v.nextFocusUpId = episodes[i - 10].id
-            v.nextFocusDownId = if (i + 10 < episodes.size) episodes[i + 10].id else v.id
+                if (i % 5 == 4 || i == episodes.lastIndex) v.id else episodes[i + 1].id
+            if (i >= 5) v.nextFocusUpId = episodes[i - 5].id
+            v.nextFocusDownId = if (i + 5 < episodes.size) episodes[i + 5].id else v.id
         }
         val primary = listOf(play, detailComments)
         play.setTextColor(accent)
@@ -3117,7 +3117,7 @@ class MainActivity : Activity() {
                 textSize = 18f
                 setTextColor(white)
                 setPadding(dp(10), dp(5), dp(10), dp(5))
-                background = rounded(Color.argb(150, 11, 15, 21))
+                background = rounded(Color.argb(150, 10, 14, 22))
                 isFocusable = false
             }.also { clock ->
                 root.addView(clock, FrameLayout.LayoutParams(-2, -2, Gravity.TOP or Gravity.END).apply {
@@ -3136,7 +3136,7 @@ class MainActivity : Activity() {
                     background =
                         GradientDrawable(
                             GradientDrawable.Orientation.TOP_BOTTOM,
-                            intArrayOf(Color.TRANSPARENT, Color.argb(240, 11, 15, 21)),
+                            intArrayOf(Color.TRANSPARENT, Color.argb(240, 6, 9, 18)),
                         )
                 }
             playbackTitle =
@@ -4782,7 +4782,7 @@ class MainActivity : Activity() {
                     setPadding(dp(14), dp(9), dp(14), dp(9))
                     setSingleLine(true)
                     ellipsize = TextUtils.TruncateAt.END
-                    background = TvStyle.shape(this@MainActivity, Color.argb(175, 12, 18, 28))
+                    background = TvStyle.shape(this@MainActivity, Color.argb(175, 11, 16, 34))
                 }
                 seasonBanner = banner
                 root.addView(banner, FrameLayout.LayoutParams(-1, -2, Gravity.BOTTOM).apply {

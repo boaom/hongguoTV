@@ -12,15 +12,18 @@ import android.widget.TextView
 /** Shared visual language for browsing pages, modal panels and playback controls. */
 internal object TvVisual {
     private var sharedNoise: Bitmap? = null
-    val accent = Color.rgb(255, 120, 68)
-    val value = Color.rgb(168, 178, 196)
-    val primary = Color.rgb(209, 217, 232)
-    val focusedValue = Color.rgb(255, 158, 112)
+    val accent = Color.rgb(255, 59, 48)          // 红果红
+    val accentSoft = Color.rgb(255, 107, 94)     // 红的高亮版
+    val neon = Color.rgb(123, 92, 255)           // 电光紫
+    val cyan = Color.rgb(25, 227, 177)           // 霓虹青
+    val value = Color.rgb(159, 179, 232)         // #9FB3E8 设置行右侧值
+    val primary = Color.rgb(220, 231, 255)       // #DCE7FF 主文字
+    val focusedValue = Color.rgb(127, 233, 255)  // #7FE9FF 聚焦值（霓虹青）
 
     fun panel(context: Context, modal: Boolean = false) = GradientDrawable(GradientDrawable.Orientation.TL_BR,
-        intArrayOf(Color.argb(if (modal) 250 else 140, 20, 26, 38), Color.argb(if (modal) 250 else 140, 24, 32, 47))).apply {
-        cornerRadius = 16 * context.resources.displayMetrics.density
-        setStroke(maxOf(1, context.resources.displayMetrics.density.toInt()), Color.argb(18, 255, 255, 255))
+        intArrayOf(Color.argb(if (modal) 250 else 140, 10, 16, 44), Color.argb(if (modal) 250 else 140, 14, 22, 60))).apply {
+        cornerRadius = 18 * context.resources.displayMetrics.density
+        setStroke(maxOf(1, context.resources.displayMetrics.density.toInt()), Color.argb(40, 96, 150, 255))
     }
 
     fun row(context: Context, focused: Boolean, selected: Boolean = false, category: Boolean = false): Drawable =
@@ -30,11 +33,11 @@ internal object TvVisual {
             override fun draw(canvas: Canvas) {
                 val rect = RectF(bounds)
                 val radius = 9 * density
-                // Concentrate the warm light near the leading edge; keep the value end quiet.
+                // 舞台追光：光从行首扫入，越向右越暗（冷色，非暖橙）。
                 paint.shader = if (focused) LinearGradient(rect.left, 0f, rect.right, 0f,
-                    intArrayOf(Color.argb(166, 255, 120, 68), Color.argb(64, 255, 120, 68), Color.argb(10, 255, 120, 68)),
+                    intArrayOf(Color.argb(150, 123, 92, 255), Color.argb(64, 90, 130, 255), Color.argb(10, 35, 60, 140)),
                     floatArrayOf(0f, .32f, 1f), Shader.TileMode.CLAMP) else null
-                paint.color = if (focused) { Color.WHITE } else if (selected) Color.argb(24, 255, 120, 68) else if (category) Color.argb(45, 28, 43, 65) else Color.TRANSPARENT
+                paint.color = if (focused) { Color.WHITE } else if (selected) Color.argb(30, 60, 120, 200) else if (category) Color.argb(45, 18, 28, 72) else Color.TRANSPARENT
                 paint.style = Paint.Style.FILL
                 canvas.drawRoundRect(rect, radius, radius, paint)
                 paint.shader = null
@@ -42,14 +45,15 @@ internal object TvVisual {
                     paint.style = Paint.Style.STROKE
                     paint.strokeWidth = density
                     paint.shader = if (focused) LinearGradient(rect.left, 0f, rect.right, 0f,
-                        intArrayOf(Color.argb(160, 255, 180, 130), Color.argb(46, 255, 120, 68), Color.argb(12, 255, 120, 68)),
+                        intArrayOf(Color.argb(170, 190, 180, 255), Color.argb(60, 123, 92, 255), Color.argb(14, 60, 90, 200)),
                         floatArrayOf(0f, .32f, 1f), Shader.TileMode.CLAMP) else null
-                    paint.color = if (focused) { Color.WHITE } else Color.argb(70, 255, 120, 68)
+                    paint.color = if (focused) { Color.WHITE } else Color.argb(80, 123, 92, 255)
                     rect.inset(density / 2, density / 2)
                     canvas.drawRoundRect(rect, radius, radius, paint)
                     paint.shader = null
                     paint.style = Paint.Style.FILL
-                    paint.color = accent
+                    // 行首竖条 = 霓虹灯管；聚焦时用青色，选中时用紫。
+                    paint.color = if (focused) cyan else neon
                     val barHeight = minOf(28 * density, rect.height() * .65f)
                     canvas.drawRoundRect(RectF(rect.left + 6 * density, rect.centerY() - barHeight / 2,
                         rect.left + 9 * density, rect.centerY() + barHeight / 2), 2 * density, 2 * density, paint)
@@ -66,18 +70,19 @@ internal object TvVisual {
         override fun draw(canvas: Canvas) {
             val rect = RectF(bounds)
             if (focused) {
-                paint.color = Color.argb(28, 255, 120, 68)
+                paint.color = Color.argb(34, 123, 92, 255)
                 canvas.drawRoundRect(rect, 7 * density, 7 * density, paint)
                 paint.style = Paint.Style.STROKE
                 paint.strokeWidth = density
-                paint.color = Color.argb(150, 255, 120, 68)
+                paint.color = Color.argb(165, 150, 130, 255)
                 rect.inset(density / 2, density / 2)
                 canvas.drawRoundRect(rect, 7 * density, 7 * density, paint)
                 paint.style = Paint.Style.FILL
             }
             if (selected) {
-                paint.color = accent
-                canvas.drawRoundRect(RectF(bounds.left + 9 * density, bounds.bottom - 3 * density,
+                // 霓虹灯管下划线：加厚到 3dp 并用青色，模拟灯带。
+                paint.color = cyan
+                canvas.drawRoundRect(RectF(bounds.left + 9 * density, bounds.bottom - 4 * density,
                     bounds.right - 9 * density, bounds.bottom - density), density, density, paint)
             }
         }
@@ -93,14 +98,20 @@ internal object TvVisual {
         override fun draw(canvas: Canvas) {
             val w = bounds.width().toFloat().coerceAtLeast(1f)
             val h = bounds.height().toFloat().coerceAtLeast(1f)
-            paint.shader = RadialGradient(w * .5f, h * .30f, w * .58f,
-                Color.rgb(36, 52, 80), Color.rgb(7, 10, 15), Shader.TileMode.CLAMP)
+            // 舞台顶光：顶部深蓝，落到底部近黑。
+            paint.shader = RadialGradient(w * .5f, h * .18f, w * .85f,
+                Color.rgb(24, 40, 96), Color.rgb(3, 6, 18), Shader.TileMode.CLAMP)
             canvas.drawRect(bounds, paint)
-            paint.shader = RadialGradient(w * .92f, h * .95f, w * .48f,
-                Color.argb(22, 130, 75, 40), Color.TRANSPARENT, Shader.TileMode.CLAMP)
+            // 第二束舞台灯（左下青紫对角光），替代原暖橙杂光。
+            paint.shader = RadialGradient(w * .08f, h * .92f, w * .55f,
+                Color.argb(34, 80, 120, 255), Color.TRANSPARENT, Shader.TileMode.CLAMP)
+            canvas.drawRect(bounds, paint)
+            // 右上一抹紫，强化霓虹层次。
+            paint.shader = RadialGradient(w * .95f, h * .05f, w * .40f,
+                Color.argb(30, 123, 92, 255), Color.TRANSPARENT, Shader.TileMode.CLAMP)
             canvas.drawRect(bounds, paint)
             paint.shader = grain
-            paint.alpha = 10
+            paint.alpha = 8
             canvas.drawRect(bounds, paint)
             paint.alpha = 255
         }

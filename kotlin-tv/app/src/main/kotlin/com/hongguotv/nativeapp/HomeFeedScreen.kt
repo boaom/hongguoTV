@@ -229,7 +229,7 @@ internal class HomeFeedScreen(
             addView(image, FrameLayout.LayoutParams(-1, -1))
             addView(View(activity).apply {
                 background = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-                    intArrayOf(0x44101828, 0xee0b101a.toInt()))
+                    intArrayOf(0x44101a30, 0xee080e18.toInt()))
             }, FrameLayout.LayoutParams(-1, -1))
             caption.maxLines = 3
             caption.ellipsize = TextUtils.TruncateAt.END
@@ -253,7 +253,7 @@ internal class HomeFeedScreen(
         hero.addView(cover, FrameLayout.LayoutParams(-1, -1))
         hero.addView(View(activity).apply {
             background = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-                intArrayOf(0x3310192a, 0xbb0b101a.toInt()))
+                intArrayOf(0x33102038, 0xbb080e18.toInt()))
         }, FrameLayout.LayoutParams(-1, -1))
         val body = LinearLayout(activity).apply { orientation = VERTICAL; setPadding(dp(8), dp(4), dp(8), dp(4)) }
         hero.addView(body, FrameLayout.LayoutParams(-1, -1))
@@ -273,7 +273,7 @@ internal class HomeFeedScreen(
         status.gravity = Gravity.CENTER
         status.textSize = 12f
         status.setPadding(dp(8), dp(6), dp(8), dp(6))
-        status.background = TvStyle.shape(activity, Color.argb(215, 11, 15, 21))
+        status.background = TvStyle.shape(activity, Color.argb(215, 6, 9, 18))
         stage.addView(status, FrameLayout.LayoutParams(-1, -2, Gravity.BOTTOM))
         content.addView(stage, lp(-1, -1))
         title.typeface = Typeface.DEFAULT_BOLD
@@ -291,7 +291,7 @@ internal class HomeFeedScreen(
         info.addView(intro)
         info.setPadding(dp(12), dp(10), dp(12), dp(10))
         info.background = GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT,
-            intArrayOf(0xbb0b101a.toInt(), 0x000b101a))
+            intArrayOf(0xbb080e18.toInt(), 0x00080e18))
         stage.addView(info, FrameLayout.LayoutParams(dp(220), -2, Gravity.START or Gravity.BOTTOM).apply {
             setMargins(dp(12), dp(8), dp(12), dp(32))
         })

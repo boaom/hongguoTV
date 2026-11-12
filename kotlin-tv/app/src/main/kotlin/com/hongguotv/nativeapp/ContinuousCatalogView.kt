@@ -390,7 +390,7 @@ internal class CatalogPosterCard(context: Context) : LinearLayout(context) {
                 (6 * density).toInt(),
                 (3 * density).toInt(),
             )
-            setBackgroundColor(Color.argb(200, 15, 18, 24))
+            setBackgroundColor(Color.argb(200, 8, 12, 24))
             visibility = GONE
         }
     val title =
@@ -425,7 +425,7 @@ internal class CatalogPosterCard(context: Context) : LinearLayout(context) {
             (6 * density).toInt(),
         )
         val defaultWidth =
-            ((resources.displayMetrics.widthPixels * .9f - 14 * density * 5) / 6 - 8 * density)
+            ((resources.displayMetrics.widthPixels * .9f - 14 * density * 5) / 3 - 8 * density)
                 .coerceAtLeast(1f)
         val defaultHeight = (defaultWidth / TvStyle.POSTER_ASPECT).roundToInt()
         poster.addView(image, FrameLayout.LayoutParams(-1, -1))
